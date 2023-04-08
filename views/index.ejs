@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1>Chat</h1>
+    <!-- <%= name %> -->
+
+    <input id="chat" type="hidden" data-roomid="<%= id %>" />
+    <input type="text" placeholder="message" id="inp" />
+    <input type="text" placeholder="username" id="username" />
+    <button id="btn">Click Me</button>
+    <ul id="list"></ul>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      var socket = io();
+
+      let input = document.getElementById("inp");
+      let startChat = document.getElementById("chat");
+      let username = document.getElementById("username");
+      console.log("username", username);
+      let btn = document.getElementById("btn");
+      let ul = document.getElementById("list");
+
+      socket.emit("join_room", {
+        roomid: startChat.getAttribute("data-roomid"),
+      });
+
+      btn.onclick = function exec() {
+        socket.emit("form_client", {
+          msg: input.value,
+          roomid: startChat.getAttribute("data-roomid"),
+          username: username.value,
+        });
+      };
+
+      socket.on("form_server", (data) => {
+        let msg = document.createElement("li");
+        msg.innerText = data.msg;
+        ul.appendChild(msg);
+        console.log(msg);
+      });
+    </script>
+  </body>
+</html>
